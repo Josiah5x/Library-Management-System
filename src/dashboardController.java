@@ -22,8 +22,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -136,45 +139,54 @@ public class dashboardController implements Initializable {
     private Button btnSelectImageB;
 
     @FXML
-    private TableColumn<?, ?> colAddressS;
+    private TableView<getStudentData> Student_tableView;
 
     @FXML
-    private TableColumn<?, ?> colAuthorB;
+    private TableColumn<getStudentData, String> colAddressS;
+    @FXML
+    private TableColumn<getStudentData, String> colBirthDate;
 
     @FXML
-    private TableColumn<?, ?> colContactS;
+    private TableColumn<getStudentData, String> colContactS;
+    @FXML
+    private TableColumn<getStudentData, String> colfirstnameS;
 
     @FXML
-    private TableColumn<?, ?> colDateS;
+    private TableColumn<getStudentData, String> colDateS;
 
     @FXML
-    private TableColumn<?, ?> colDatesB;
+    private TableColumn<getStudentData, String> collasnameS;
+    @FXML
+    private TableColumn<getStudentData, String> colEmailS;
 
     @FXML
-    private TableColumn<?, ?> colEmailS;
+    private TableColumn<getStudentData, String> colGenderS;
 
     @FXML
-    private TableColumn<?, ?> colGenderS;
+    private TableColumn<getStudentData, String> colIDNumberS;
 
     @FXML
-    private TableColumn<?, ?> colGenreB;
+    private TableColumn<getStudentData, String> colStudentTypeS;
 
     @FXML
-    private TableColumn<?, ?> colIDNumberS;
-
+    private TableView<availableBooks> AddBook_tableView;
     @FXML
-    private TableColumn<?, ?> colImageB;
-
+    private TableColumn<availableBooks, String> colTitleB;
     @FXML
-    private TableColumn<?, ?> colStudentTypeS;
-
+    private TableColumn<availableBooks, String> colAuthorB;
     @FXML
-    private TableColumn<?, ?> colTitleB;
+    private TableColumn<availableBooks, String> colGenreB;
+    @FXML
+    private TableColumn<availableBooks, String> colImageB;
+    @FXML
+    private TableColumn<availableBooks, String> colDatesB;
 
     @FXML
     private TextField contactSform;
     @FXML
     private TextField emailSform;
+    @FXML
+    private TextField tfSearch;
 
     @FXML
     private TextField firstnameSform;
@@ -362,6 +374,102 @@ public class dashboardController implements Initializable {
     // private FontAwesomeIcon edit_icon;
 
     @FXML
+    void onclickSearch(ActionEvent event) {
+
+    }
+
+    public ObservableList<getStudentData> studentListss() {
+
+        ObservableList<getStudentData> studentdataList = FXCollections.observableArrayList();
+
+        String sql = "SELECT * FROM student ";
+
+        connect = Database.connectDB();
+
+        try {
+
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            getStudentData studentsList;
+
+            while (result.next()) {
+                System.out.print(result.getString("birthdate"));
+                studentsList = new getStudentData(result.getString("idnumber"),
+                        result.getString("firstname"),
+                        result.getString("lastname"),
+                        result.getString("birthdate"),
+                        result.getString("gender"),
+                        result.getString("address"),
+                        result.getString("email"),
+                        result.getString("contact"),
+                        result.getString("type"));
+
+                studentdataList.add(studentsList);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return studentdataList;
+
+    }
+
+    private ObservableList<getStudentData> studentLists;
+
+    public void studentListData() {
+        studentLists = studentListss();
+
+        colIDNumberS.setCellValueFactory(new PropertyValueFactory<>("idnumber"));
+        colfirstnameS.setCellValueFactory(new PropertyValueFactory<>("firstname"));
+        collasnameS.setCellValueFactory(new PropertyValueFactory<>("lastname"));
+        colBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthdate"));
+        colGenderS.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        colAddressS.setCellValueFactory(new PropertyValueFactory<>("address"));
+        colEmailS.setCellValueFactory(new PropertyValueFactory<>("email"));
+        colContactS.setCellValueFactory(new PropertyValueFactory<>("contact"));
+        colStudentTypeS.setCellValueFactory(new PropertyValueFactory<>("type"));
+        // colDateS.setCellValueFactory(new PropertyValueFactory<>("dates"));
+
+        Student_tableView.setItems(studentLists);
+
+    }
+
+    public void addAvailableBookSearch() {
+
+        FilteredList<availableBooks> filter = new FilteredList<>(listBook, e -> true);
+
+        tfSearch.textProperty().addListener((Observable, oldValue, newValue) -> {
+
+            filter.setPredicate(predicateAvailableBookData -> {
+
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String searchKey = newValue.toLowerCase();
+                if (predicateAvailableBookData.getTitle().toString().contains(searchKey)) {
+                    return true;
+                } else if (predicateAvailableBookData.getAuthor().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicateAvailableBookData.getGenre().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicateAvailableBookData.getDate().toString().contains(searchKey)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        });
+
+        SortedList<availableBooks> sortList = new SortedList<>(filter);
+
+        sortList.comparatorProperty().bind(availableBooks_tableView.comparatorProperty());
+        availableBooks_tableView.setItems(sortList);
+    }
+
+    @FXML
     void onBtnSubmitID(ActionEvent event) {
         String sql = "SELECT * FROM student WHERE idnumber = ? ";
 
@@ -376,7 +484,7 @@ public class dashboardController implements Initializable {
             Alert alert;
             if (tfstudentIDNumber.getText().isEmpty()) {
                 alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Admin Message");
+                // alert.setTitle("Admin Message");
                 alert.setHeaderText(null);
                 alert.setContentText("Please fill all blank fields.");
                 alert.showAndWait();
@@ -384,14 +492,15 @@ public class dashboardController implements Initializable {
             } else {
                 if (result.next()) {
                     getData.studentNumber = tfstudentIDNumber.getText();
-                    // DON'T FORGET THIS!!!!
-                    // getData.path = result.getString("image");
+                    take_StudentNumber.setText(getData.studentNumber);
+
+                    take_FirstName.setText(result.getString("firstname") + " " + result.getString("lastname"));
 
                     alert = new Alert(AlertType.INFORMATION);
                     alert.setTitle("Admin Message");
                     alert.setHeaderText(null);
-                    alert.setContentText("Successfully Login!");
-                    alert.showAndWait();
+                    alert.setContentText("Successfully!");
+                    alert.show();
                     // TO HIDE THE LOGIN FORM
 
                     // FOR DASHBOARD
@@ -405,12 +514,13 @@ public class dashboardController implements Initializable {
                     issueBooks_btn.setDisable(false);
                     returnBooks_btn.setDisable(false);
                     currentForm_label.setText("Available Books");
+                    addAvailableBookSearch();
 
                 } else {
                     alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Admin Message");
                     alert.setHeaderText(null);
-                    alert.setContentText("Wrong Username or Password.");
+                    alert.setContentText("Wrong ID Number");
                     alert.showAndWait();
                 }
             }
@@ -449,12 +559,13 @@ public class dashboardController implements Initializable {
     @FXML
     void onBtnAddStudent(ActionEvent event) {
         navButtonDesign(event);
-
+        studentListData();
     }
 
     @FXML
     void onBtnAddBook(ActionEvent event) {
         navButtonDesign(event);
+        showAvailableBooks();
 
     }
 
@@ -539,7 +650,15 @@ public class dashboardController implements Initializable {
                 alert.setContentText("Successful!y take the book!");
                 alert.showAndWait();
 
-                // clearTakeData();
+                // clear Data input
+                idnumberSform.setText("");
+                firstnameSform.setText("");
+                lastnameSform.setText("");
+                genderSform.getSelectionModel().clearSelection();
+                addressSform.setText("");
+                emailSform.setText("");
+                contactSform.setText("");
+                studentTyoeSform.getSelectionModel().clearSelection();
 
             }
         } catch (Exception e) {
@@ -625,7 +744,7 @@ public class dashboardController implements Initializable {
         ObservableList list = FXCollections.observableList(combo);
         ObservableList list2 = FXCollections.observableList(combo2);
 
-        take_Gender.setItems(list);
+        // take_Gender.setItems(list);
         genderSform.setItems(list);
         studentTyoeSform.setItems(list2);
 
@@ -754,6 +873,8 @@ public class dashboardController implements Initializable {
     public void clearTakeData() {
 
         take_BookTitle.setText("");
+        take_StudentNumber.setText("");
+        take_FirstName.setText("");
         take_titleLabel.setText("");
         take_authorLabel.setText("");
         take_genreLabel.setText("");
@@ -769,6 +890,7 @@ public class dashboardController implements Initializable {
         take_genreLabel.setText("");
         take_dateLabel.setText("");
         take_imageView.setImage(null);
+        // take_FirstName.setText("");
 
     }
 
@@ -898,23 +1020,17 @@ public class dashboardController implements Initializable {
         try {
 
             availableBooks aBooks;
-
             prepare = connect.prepareStatement(sql);
             result = prepare.executeQuery();
-
             while (result.next()) {
                 aBooks = new availableBooks(result.getString("title"),
                         result.getString("author"), result.getString("genre"),
                         result.getString("image"), result.getDate("dates"));
-
                 listBooks.add(aBooks);
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return listBooks;
     }
 
@@ -1084,7 +1200,14 @@ public class dashboardController implements Initializable {
         col_ab_bookType.setCellValueFactory(new PropertyValueFactory<>("genre"));
         col_ab_publishedDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
+        colTitleB.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colAuthorB.setCellValueFactory(new PropertyValueFactory<>("author"));
+        colGenreB.setCellValueFactory(new PropertyValueFactory<>("genre"));
+        colImageB.setCellValueFactory(new PropertyValueFactory<>("image"));
+        colDatesB.setCellValueFactory(new PropertyValueFactory<>("date"));
+
         availableBooks_tableView.setItems(listBook);
+        AddBook_tableView.setItems(listBook);
 
     }
 
@@ -1099,13 +1222,15 @@ public class dashboardController implements Initializable {
                 return;
             }
             availableBooks_title.setText(bookData.getTitle());
-            System.out.println(bookData.getImage());
+            // System.out.println(bookData.getImage());
             // THIS IS REQUIRED TO DISPLAY THE IMAGE
             // NOTE! DON'T FORGET THE "file:"
             String uri = bookData.getImage();
             image = new Image(uri);
             availableBooks_imageView.setImage(image);
+            take_imageView.setImage(image);
             getData.takeBookTitle = bookData.getTitle();
+            take_BookTitle.setText(getData.takeBookTitle);
             getData.title = bookData.getTitle();
             getData.author = bookData.getAuthor();
             getData.genre = bookData.getGenre();
@@ -1208,44 +1333,6 @@ public class dashboardController implements Initializable {
         smallCircle_image.setFill(new ImagePattern(image));
 
     }
-
-    // public void designInserImage() {
-
-    // edit_btn.setVisible(false);
-
-    // circle_image.setOnMouseEntered((MouseEvent event) -> {
-
-    // edit_btn.setVisible(true);
-
-    // });
-
-    // circle_image.setOnMouseExited((MouseEvent event) -> {
-
-    // edit_btn.setVisible(false);
-
-    // });
-
-    // edit_btn.setOnMouseEntered((MouseEvent event) -> {
-
-    // edit_btn.setVisible(true);
-    // edit_icon.setFill(Color.valueOf("#fff"));
-
-    // });
-
-    // edit_btn.setOnMousePressed((MouseEvent event) -> {
-
-    // edit_btn.setVisible(true);
-    // edit_icon.setFill(Color.RED);
-
-    // });
-
-    // edit_btn.setOnMouseExited((MouseEvent event) -> {
-
-    // edit_btn.setVisible(false);
-
-    // });
-
-    // }
 
     public void sideNavButtonDesign(ActionEvent event) {
 
@@ -1380,6 +1467,7 @@ public class dashboardController implements Initializable {
             returnBook_form.setVisible(false);
             AddBooksAnchorPane.setVisible(false);
             Student_AnchorPaneForm.setVisible(false);
+            addAvailableBookSearch();
 
             // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
             // right, #46589a, #4278a7);");
@@ -1639,8 +1727,10 @@ public class dashboardController implements Initializable {
         // designInserImage();
 
         // showProfile();
-
+        // addAvailableBookSearch();
         // // TO SHOW THE AVAILABLE BOOKS
+        studentListData();
+
         showAvailableBooks();
 
         studentNumber();
@@ -1653,6 +1743,7 @@ public class dashboardController implements Initializable {
 
         showSavedBooks();
 
+        studentListss();
         // RETURN FORM
         try {
             showBookReturn();

@@ -21,7 +21,6 @@ public class Database {
             Class.forName("org.sqlite.JDBC");
             // MY DATABASE IS marcoData
             Connection connect = DriverManager.getConnection("jdbc:sqlite:libraryManagementSystem.sqlite");
-            System.out.println("Database established");
             return connect;
         } catch (Exception e) {
             e.printStackTrace();

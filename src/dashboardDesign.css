@@ -81,9 +81,9 @@ and open the template in the editor.
 }
 
 .card-form{
-    -fx-background-color:#f8f8f8;
+    -fx-background-color:#eee;
     -fx-border-color:#454368;
-    -fx-border-radius:10px;
+    -fx-border-radius:1px;
     -fx-background-radius:10px;
 }
 
@@ -104,14 +104,14 @@ and open the template in the editor.
 }
 
 .take-btn{
-    -fx-background-color:#914f96;
+    -fx-background-color:#10c06e;
     -fx-background-radius:15px;
     -fx-cursor:hand;
     -fx-font-size:15px;
     -fx-text-fill:#fff;
 }
 .take-btn:hover{
-    -fx-background-color:#b356bb;
+    -fx-background-color:#17b83a;
 }
 
 .textfield_take{

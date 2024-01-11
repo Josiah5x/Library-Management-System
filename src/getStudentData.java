@@ -1,4 +1,5 @@
 public class getStudentData {
+
     String idnumber, firstname, lastname, birthdate, gender, address, email, contact, type;
 
     public String getIdnumber() {
