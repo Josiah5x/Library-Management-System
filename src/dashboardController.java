@@ -4,25 +4,7 @@
  * and open the template in the editor.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -33,25 +15,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
@@ -59,14 +29,26 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import javafx.geometry.Insets;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
- *
  * @author MarcoMan
- *         Channel: https://www.youtube.com/channel/UCPgcmw0LXToDn49akUEJBkQ
- *         Please support our channel (SUBSCRIBE --> TURN ON NOTIFICATION -->
- *         HIT THE LIKE BUTTON)
+ * Channel: https://www.youtube.com/channel/UCPgcmw0LXToDn49akUEJBkQ
+ * Please support our channel (SUBSCRIBE --> TURN ON NOTIFICATION -->
+ * HIT THE LIKE BUTTON)
  */
 public class dashboardController implements Initializable {
 
@@ -394,7 +376,6 @@ public class dashboardController implements Initializable {
             getStudentData studentsList;
 
             while (result.next()) {
-                System.out.print(result.getString("birthdate"));
                 studentsList = new getStudentData(result.getString("idnumber"),
                         result.getString("firstname"),
                         result.getString("lastname"),
@@ -547,6 +528,7 @@ public class dashboardController implements Initializable {
         savedBook_form.setVisible(false);
         returnBook_form.setVisible(false);
         AddBooksAnchorPane.setVisible(false);
+        Student_AnchorPaneForm.setVisible(false);
         StudentIDAnchorpanrForm.setVisible(true);
         // Button mutable
         savedBooks_btn.setDisable(true);
@@ -581,13 +563,7 @@ public class dashboardController implements Initializable {
         File file = open.showOpenDialog(stage);
         if (file != null) {
             getData.path = file.getAbsolutePath();
-            // File sourFile = new File(getData.path);
-
-            // File saveFile = new File(fileName);
-            // saveFile.createNewFile();
-            // item.write(saveFile);
             String uri = "file:" + getData.path;
-
             image = new Image(uri, 127, 162, false, true);
             // take_imageView.setImage(image);
             bookImage.setImage(image);
@@ -595,9 +571,7 @@ public class dashboardController implements Initializable {
             // copyFile(sourFile.toPath(), destFile.toPath());
             tfImageB.setText(uri);
             // System.out.println(getData.path);
-
         }
-
     }
 
     @FXML
@@ -647,8 +621,9 @@ public class dashboardController implements Initializable {
                 alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("Admin Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Successful!y take the book!");
+                alert.setContentText("Successfully!");
                 alert.showAndWait();
+
 
                 // clear Data input
                 idnumberSform.setText("");
@@ -659,7 +634,7 @@ public class dashboardController implements Initializable {
                 emailSform.setText("");
                 contactSform.setText("");
                 studentTyoeSform.getSelectionModel().clearSelection();
-
+                studentListData();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -701,10 +676,14 @@ public class dashboardController implements Initializable {
                 alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("Admin Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Successful!y take the book!");
+                alert.setContentText("Successfully");
                 alert.showAndWait();
-
+                showAvailableBooks();
                 // clearTakeData();
+                tfTitleB.setText("");
+                tfAuthor.setText("");
+                tfGenre.setText("");
+                tfImageB.setText("");
 
             }
         } catch (Exception e) {
@@ -720,8 +699,8 @@ public class dashboardController implements Initializable {
     private Statement statement;
     private ResultSet result;
 
-    private String comboBoxGender[] = { "Male", "Female", "Others" };
-    private String comboBoxStudent[] = { "Reguler", "Part-Time", "Master", "Phd" };
+    private String comboBoxGender[] = {"Male", "Female", "Others"};
+    private String comboBoxStudent[] = {"Reguler", "Part-Time", "Master", "Phd"};
 
     public void gender() {
     }
@@ -762,17 +741,7 @@ public class dashboardController implements Initializable {
         try {
 
             Alert alert;
-
-            if (take_FirstName.getText().isEmpty()
-                    || take_LastName.getText().isEmpty()
-                    || take_Gender.getSelectionModel().isEmpty()) {
-
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Admin Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please type complete Student Details");
-                alert.showAndWait();
-            } else if (take_titleLabel.getText().isEmpty()) {
+            if (take_titleLabel.getText().isEmpty()) {
                 alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Admin Message");
                 alert.setHeaderText(null);
@@ -783,8 +752,8 @@ public class dashboardController implements Initializable {
                 prepare = connect.prepareStatement(sql);
                 prepare.setString(1, take_StudentNumber.getText());
                 prepare.setString(2, take_FirstName.getText());
-                prepare.setString(3, take_LastName.getText());
-                prepare.setString(4, (String) take_Gender.getSelectionModel().getSelectedItem());
+                prepare.setString(3, "not Needed");
+                prepare.setString(4, "Not Needed");
                 prepare.setString(5, take_titleLabel.getText());
                 prepare.setString(6, take_authorLabel.getText());
                 prepare.setString(7, take_genreLabel.getText());
@@ -811,7 +780,7 @@ public class dashboardController implements Initializable {
 
     }
 
-    public void findBook(ActionEvent event) {
+    void findBook() {
 
         clearFindData();
 
@@ -846,7 +815,7 @@ public class dashboardController implements Initializable {
 
                     getData.path = result.getString("image");
 
-                    String uri = "file:" + getData.path;
+                    String uri = getData.path;
 
                     image = new Image(uri, 127, 162, false, true);
                     take_imageView.setImage(image);
@@ -993,20 +962,29 @@ public class dashboardController implements Initializable {
     }
 
     public void selectReturnBook() {
+        try {
+            returnBook rBook = return_tableView.getSelectionModel().getSelectedItem();
+            int num = return_tableView.getSelectionModel().getFocusedIndex();
 
-        returnBook rBook = return_tableView.getSelectionModel().getSelectedItem();
-        int num = return_tableView.getSelectionModel().getFocusedIndex();
+            if ((num - 1) < -1) {
+                return;
+            }
 
-        if ((num - 1) < -1) {
-            return;
+            String uri = rBook.getImage();
+            image = new Image(uri);
+            return_imageView.setImage(image);
+
+            getData.takeBookTitle = rBook.getTitle();
+        } catch (Exception e) {
+            // System.out.println(e);
+            Alert alert;
+
+            alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Admin Message");
+            alert.setHeaderText(null);
+            alert.setContentText("image Location not found");
+            alert.showAndWait();
         }
-
-        String uri = "file:" + rBook.getImage();
-
-        image = new Image(uri, 143, 181, false, true);
-        return_imageView.setImage(image);
-
-        getData.takeBookTitle = rBook.getTitle();
     }
 
     public ObservableList<availableBooks> dataList() {
@@ -1089,21 +1067,30 @@ public class dashboardController implements Initializable {
     }
 
     public void selectSavedBooks() {
+        try {
+            saveBook sBook = save_tableView.getSelectionModel().getSelectedItem();
+            int num = save_tableView.getSelectionModel().getFocusedIndex();
 
-        saveBook sBook = save_tableView.getSelectionModel().getSelectedItem();
-        int num = save_tableView.getSelectionModel().getFocusedIndex();
+            if ((num - 1) < -1) {
+                return;
+            }
 
-        if ((num - 1) < -1) {
-            return;
+            String uri = sBook.getImage();
+            image = new Image(uri);
+            save_imageView.setImage(image);
+            getData.image = sBook.getImage();
+            getData.title = sBook.getTitle();
+
+        } catch (Exception e) {
+            // System.out.println(e);
+            Alert alert;
+
+            alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Admin Message");
+            alert.setHeaderText(null);
+            alert.setContentText("image Location not found");
+            alert.showAndWait();
         }
-
-        String uri = "file:" + sBook.getImage();
-
-        image = new Image(uri, 117, 148, false, true);
-        save_imageView.setImage(image);
-
-        getData.image = sBook.getImage();
-        getData.title = sBook.getTitle();
 
     }
 
@@ -1145,7 +1132,6 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void unsaveBooks() {
@@ -1194,7 +1180,6 @@ public class dashboardController implements Initializable {
     public void showAvailableBooks() {
 
         listBook = dataList();
-
         col_ab_bookTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         col_ab_author.setCellValueFactory(new PropertyValueFactory<>("author"));
         col_ab_bookType.setCellValueFactory(new PropertyValueFactory<>("genre"));
@@ -1213,18 +1198,13 @@ public class dashboardController implements Initializable {
 
     public void selectAvailableBooks() throws IOException {
         try {
-
             availableBooks bookData = availableBooks_tableView.getSelectionModel().getSelectedItem();
-
             int num = availableBooks_tableView.getSelectionModel().getFocusedIndex();
 
             if ((num - 1) < -1) {
                 return;
             }
             availableBooks_title.setText(bookData.getTitle());
-            // System.out.println(bookData.getImage());
-            // THIS IS REQUIRED TO DISPLAY THE IMAGE
-            // NOTE! DON'T FORGET THE "file:"
             String uri = bookData.getImage();
             image = new Image(uri);
             availableBooks_imageView.setImage(image);
@@ -1258,26 +1238,8 @@ public class dashboardController implements Initializable {
             savedBook_form.setVisible(false);
             returnBook_form.setVisible(false);
             StudentIDAnchorpanrForm.setVisible(false);
-
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
             currentForm_label.setText("Issue Books");
+            findBook();
 
         }
     }
@@ -1345,24 +1307,6 @@ public class dashboardController implements Initializable {
             savedBook_form.setVisible(false);
             returnBook_form.setVisible(false);
 
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
             currentForm_label.setText("Available Books");
 
         } else if (event.getSource() == halfNav_takeBtn) {
@@ -1373,23 +1317,6 @@ public class dashboardController implements Initializable {
             savedBook_form.setVisible(false);
             returnBook_form.setVisible(false);
 
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
 
             currentForm_label.setText("Issue Books");
 
@@ -1400,24 +1327,6 @@ public class dashboardController implements Initializable {
             StudentIDAnchorpanrForm.setVisible(false);
             savedBook_form.setVisible(false);
             returnBook_form.setVisible(true);
-
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
 
             currentForm_label.setText("Return Books");
 
@@ -1431,23 +1340,6 @@ public class dashboardController implements Initializable {
             savedBook_form.setVisible(true);
             returnBook_form.setVisible(false);
 
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
 
             currentForm_label.setText("Saved Books");
 
@@ -1469,24 +1361,6 @@ public class dashboardController implements Initializable {
             Student_AnchorPaneForm.setVisible(false);
             addAvailableBookSearch();
 
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
             currentForm_label.setText("Available Books");
 
         } else if (event.getSource() == issueBooks_btn) {
@@ -1499,23 +1373,6 @@ public class dashboardController implements Initializable {
             AddBooksAnchorPane.setVisible(false);
             Student_AnchorPaneForm.setVisible(false);
 
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
 
             currentForm_label.setText("Issue Books");
 
@@ -1529,23 +1386,6 @@ public class dashboardController implements Initializable {
             AddBooksAnchorPane.setVisible(false);
             Student_AnchorPaneForm.setVisible(false);
 
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
 
             currentForm_label.setText("Return Books");
 
@@ -1560,27 +1400,7 @@ public class dashboardController implements Initializable {
             returnBook_form.setVisible(false);
             AddBooksAnchorPane.setVisible(false);
             Student_AnchorPaneForm.setVisible(false);
-
-            // savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
-            // halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #46589a, #4278a7);");
-            // halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-            // halfNav_availableBtn.setStyle("-fx-background-color:linear-gradient(to bottom
-            // right, #344275, #3a6389);");
-
             currentForm_label.setText("Saved Books");
-
             showSavedBooks();
 
         } else if (event.getSource() == btnAddStudent) {
@@ -1591,6 +1411,10 @@ public class dashboardController implements Initializable {
             returnBook_form.setVisible(false);
             AddBooksAnchorPane.setVisible(false);
             Student_AnchorPaneForm.setVisible(true);
+            currentForm_label.setText("Add Student");
+            showAvailableBooks();
+            studentListData();
+            showAvailableBooks();
 
         } else if (event.getSource() == btnAddBook) {
             issue_form.setVisible(false);
@@ -1598,7 +1422,13 @@ public class dashboardController implements Initializable {
             savedBook_form.setVisible(false);
             returnBook_form.setVisible(false);
             Student_AnchorPaneForm.setVisible(false);
+            StudentIDAnchorpanrForm.setVisible(false);
             AddBooksAnchorPane.setVisible(true);
+            currentForm_label.setText("Add Books");
+
+            showAvailableBooks();
+            studentListData();
+            showAvailableBooks();
 
         }
     }

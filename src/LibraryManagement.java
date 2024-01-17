@@ -23,8 +23,8 @@ public class LibraryManagement extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
-        // Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+//        Parent root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
+         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
 
         Scene scene = new Scene(root);
         root.setOnMousePressed((MouseEvent event) -> {

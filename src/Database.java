@@ -14,6 +14,7 @@ import java.sql.DriverManager;
  *         Please support our channel (SUBSCRIBE --> TURN ON NOTIFICATION -->
  *         HIT THE LIKE BUTTON)
  */
+
 public class Database {
 
     static Connection connectDB() {

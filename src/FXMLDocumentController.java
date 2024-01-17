@@ -4,13 +4,6 @@
  * and open the template in the editor.
  */
 
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -19,13 +12,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -37,7 +36,7 @@ import javafx.stage.StageStyle;
 public class FXMLDocumentController implements Initializable {
 
     @FXML
-    private TextField studentNumber;
+    private TextField admin;
 
     @FXML
     private PasswordField password;
@@ -60,24 +59,19 @@ public class FXMLDocumentController implements Initializable {
     private double x = 0;
     private double y = 0;
 
-    String name = "joe";
-    String pass = "123";
+    String Uname = "admin";
+    String pass = "admin";
 
     public void login() {
 
-        String sql = "SELECT * FROM student WHERE idnumber = ? ";
 
-        connect = Database.connectDB();
 
         try {
-            prepare = connect.prepareStatement(sql);
-            prepare.setString(1, studentNumber.getText());
-            // prepare.setString(2, password.getText());
-            result = prepare.executeQuery();
-            String user = studentNumber.getText();
+
+            String Username = admin.getText();
             String passwords = password.getText();
             Alert alert;
-            if (studentNumber.getText().isEmpty() || password.getText().isEmpty()) {
+            if (admin.getText().isEmpty() || password.getText().isEmpty()) {
                 alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Admin Message");
                 alert.setHeaderText(null);
@@ -85,9 +79,9 @@ public class FXMLDocumentController implements Initializable {
                 alert.showAndWait();
 
             } else {
-                if (passwords.equals(pass)) {
-                    if (result.next()) {
-                        getData.studentNumber = studentNumber.getText();
+                if (Username.equals(Uname) && passwords.equals(pass)) {
+
+                        getData.studentNumber = admin.getText().toUpperCase();
                         // DON'T FORGET THIS!!!!
                         // getData.path = result.getString("image");
 
@@ -99,7 +93,6 @@ public class FXMLDocumentController implements Initializable {
                         // TO HIDE THE LOGIN FORM
                         login_Btn.getScene().getWindow().hide();
                         // FOR DASHBOARD
-                        result.close();
                         Parent root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
                         Stage stage = new Stage();
                         Scene scene = new Scene(root);
@@ -122,7 +115,7 @@ public class FXMLDocumentController implements Initializable {
                         alert.setContentText("Wrong Username or Password.");
                         alert.showAndWait();
                     }
-                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,9 +129,9 @@ public class FXMLDocumentController implements Initializable {
         if (event.getCharacter().matches("[^\\e\t\r\\d+$]")) {
             event.consume();
 
-            studentNumber.setStyle("-fx-border-color:#e04040");
+            admin.setStyle("-fx-border-color:#e04040");
         } else {
-            studentNumber.setStyle("-fx-border-color:#fff");
+            admin.setStyle("-fx-border-color:#fff");
         }
 
     }
